@@ -2,12 +2,9 @@
 $(function() {
 	"use strict";
 	
-	if ($('#list').length === 0) {
-		return;
-	}
-	
 	// Elements
 	var $list = $('#list'),
+		$form = $('#form'),
 		$checkoutButton = $('.js-checkout');
 	
 	// Attributes
@@ -65,6 +62,7 @@ $(function() {
 		
 		UpdateCookie();
 		UpdateUrl();
+		UpdateCartPreview();
 	};
 	
 	var IsSelected = function($button) {
@@ -91,6 +89,7 @@ $(function() {
 		
 		UpdateCookie();
 		UpdateUrl();
+		UpdateCartPreview();
 	};
 	
 	var RemoveFromList = function(id) {
@@ -104,6 +103,7 @@ $(function() {
 		
 		UpdateCookie();
 		UpdateUrl();
+		UpdateCartPreview();
 	};
 	
 	var SerializeData = function()
@@ -121,8 +121,18 @@ $(function() {
 		$checkoutButton.attr('href', $checkoutButton.data('href') + '?selectedItems=' + SerializeData());
 	};
 	
+	var UpdateCartPreview = function()
+	{
+		$('#cart-preview').find('span').text(selectedItemsList.length);
+	};
 	
-	// Init
-	GenerateList();
-	InitList();
+	// Init List
+	if ($('#list').length !== 0) {
+		GenerateList();
+		InitList();
+	}
+	
+	if ($('#form').length !== 0) {
+		
+	}
 });
