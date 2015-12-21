@@ -13,6 +13,7 @@ $(function() {
 	// Attributes
 	var selectedItemsList = [],
 		selectedClass = 'active',
+		seperator = '-',
 		cookieName = 'selectedCartItems';
 	
 	var GenerateList = function() {
@@ -21,11 +22,16 @@ $(function() {
 	
 	var InitListItem = function($item) {
 		
-		// Save original URL
-		$checkoutButton.attr('data-href', $checkoutButton.attr('href'));
+		var $button = $item.find('.js-add-to-cart-button');
+		
+		// Mark Item selected		
+		if ($.inArray($button.data('id').toString(), selectedItemsList) !== -1)
+		{
+			SelectItem($button);
+		}
 		
 		// Init click
-		$item.find('.js-add-to-cart-button').on('click', function(e) {
+		$button.on('click', function(e) {
 			e.preventDefault();
 			var $button = $(this);
 			
@@ -39,10 +45,26 @@ $(function() {
 	};
 	
 	var InitList = function() {
+		
+		// Get saved data
+		if (typeof Cookies.get(cookieName) !== 'undefined') {
+			selectedItemsList = Cookies.get(cookieName).split(seperator);
+		}
+		
+		// Save original URL
+		$checkoutButton.attr('data-href', $checkoutButton.attr('href'));
+		
+		
 		var $items = $list.find('.js-item');
 		$items.each(function() {
 			InitListItem($(this));
 		});
+		
+		// Reset cookie
+		Cookies.set(cookieName, " ", { expires: 1 });
+		
+		UpdateCookie();
+		UpdateUrl();
 	};
 	
 	var IsSelected = function($button) {
@@ -60,7 +82,7 @@ $(function() {
 	};
 	
 	var AddToList = function(id) {
-		if ($.inArray(id, selectedItemsList) !== -1)
+		if ($.inArray(id.toString(), selectedItemsList) !== -1)
 		{
 			return;
 		}
@@ -71,10 +93,14 @@ $(function() {
 		UpdateUrl();
 	};
 	
-	var RemoveFromList = function(id) {		
-		$.grep(selectedItemsList, function(value) {
-		  return value != id;
-		});
+	var RemoveFromList = function(id) {
+		id = id.toString();
+		for (var i=selectedItemsList.length-1; i>=0; i--) {
+			if (selectedItemsList[i].toString() === id) {
+				selectedItemsList.splice(i, 1);
+				break;
+			}
+		}
 		
 		UpdateCookie();
 		UpdateUrl();
@@ -82,7 +108,7 @@ $(function() {
 	
 	var SerializeData = function()
 	{
-		return selectedItemsList.join('-');
+		return selectedItemsList.join(seperator);
 	};
 	
 	var UpdateCookie = function()
