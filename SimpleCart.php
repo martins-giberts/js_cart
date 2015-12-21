@@ -65,7 +65,8 @@ class SimpleCart
 		setcookie(
 			$this->cookie_key, 
 			implode($this->delimiter, $data), 
-			time() + self::getCookieDays($this->cookie_time_days)
+			time() + self::getCookieDays($this->cookie_time_days),
+			''
 		);
 	}
 	

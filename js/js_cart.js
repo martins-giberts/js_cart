@@ -58,7 +58,7 @@ $(function() {
 		});
 		
 		// Reset cookie
-		Cookies.set(cookieName, " ", { expires: 1 });
+		Cookies.set(cookieName, " ", { expires: 1, path: ''  });
 		
 		UpdateCookie();
 		UpdateUrl();
@@ -113,7 +113,7 @@ $(function() {
 	
 	var UpdateCookie = function()
 	{
-		Cookies.set(cookieName, SerializeData(), { expires: 7 });
+		Cookies.set(cookieName, SerializeData(), { expires: 7, path: '' });
 	};
 	
 	var UpdateUrl = function()
