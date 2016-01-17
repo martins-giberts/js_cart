@@ -1,138 +1,71 @@
-
+// New preview
 $(function() {
-	"use strict";
 	
-	// Elements
-	var $list = $('#list'),
-		$form = $('#form'),
-		$checkoutButton = $('.js-checkout');
-	
-	// Attributes
-	var selectedItemsList = [],
-		selectedClass = 'active',
-		seperator = '-',
-		cookieName = 'selectedCartItems';
-	
-	var GenerateList = function() {
-		$list.html(tmpl('template-list', {}));
+	var updateMobileCart = function() {
+		console.log(regions.serialize());
 	};
 	
-	var InitListItem = function($item) {
+	var updateUrl = function() {
+		var url = new URI($('.js-checkout').attr('href'));
+		url.query({ selectedItems: cart.serialize(), selectedRegions: regions.serialize() });
 		
-		var $button = $item.find('.js-add-to-cart-button');
+		$('.js-checkout').attr('href', url);
+		$('.js-serialized-url').val(url);
+	};
+
+	// Regions
+	var regions = new Collection('regions',{
+		itemSelector: '.js-region-item',
+		itemButtonSelector: '.js-add-region-button',
 		
-		// Mark Item selected		
-		if ($.inArray($button.data('id').toString(), selectedItemsList) !== -1)
-		{
-			SelectItem($button);
-		}
-		
-		// Init click
-		$button.on('click', function(e) {
-			e.preventDefault();
-			var $button = $(this);
+		// Callbacks
+		afterInit: function(Collection) {
+			$('.js-regions-count').html(Collection.activeItemsCount());
+		},
+		afterItemInit: function(Collection, Item) {
+			if (Item.selected) {
+				Item.button.addClass('active');
+			}
+		},
+		afterItemClick: function(Collection, Item) {
 			
-			if (IsSelected($button)) {
-				DeselectItem($button);
+			$('.js-regions-count').html(Collection.activeItemsCount());
+			updateUrl();
+			
+			if (Item.selected) {
+				Item.button.addClass('active');
 				return;
 			}
-			
-			SelectItem($button);
-		});
-	};
-	
-	var InitList = function() {
-		
-		// Get saved data
-		if (typeof Cookies.get(cookieName) !== 'undefined') {
-			selectedItemsList = Cookies.get(cookieName).split(seperator);
+			Item.button.removeClass('active');
 		}
-		
-		// Save original URL
-		$checkoutButton.attr('data-href', $checkoutButton.attr('href'));
-		
-		
-		var $items = $list.find('.js-item');
-		$items.each(function() {
-			InitListItem($(this));
-		});
-		
-		// Reset cookie
-		Cookies.set(cookieName, " ", { expires: 1, path: ''  });
-		
-		UpdateCookie();
-		UpdateUrl();
-		UpdateCartPreview();
-	};
+	});
 	
-	var IsSelected = function($button) {
-		return $button.hasClass(selectedClass);
-	};
-	
-	var SelectItem = function($button) {
-		$button.addClass(selectedClass);
-		AddToList($button.data('id'));
-	};
-	
-	var DeselectItem = function($button) {
-		$button.removeClass(selectedClass);
-		RemoveFromList($button.data('id'));
-	};
-	
-	var AddToList = function(id) {
-		if ($.inArray(id.toString(), selectedItemsList) !== -1)
-		{
-			return;
-		}
+	// Items
+	var cart = new Collection('cart',{
+		itemSelector: '.js-cart-item',
+		itemButtonSelector: '.js-add-to-cart-button',
 		
-		selectedItemsList.push(id);
-		
-		UpdateCookie();
-		UpdateUrl();
-		UpdateCartPreview();
-	};
-	
-	var RemoveFromList = function(id) {
-		id = id.toString();
-		for (var i=selectedItemsList.length-1; i>=0; i--) {
-			if (selectedItemsList[i].toString() === id) {
-				selectedItemsList.splice(i, 1);
-				break;
+		// Callbacks
+		afterInit: function(Collection) {
+			$('.js-offers-count').html(Collection.activeItemsCount());
+		},
+		afterItemInit: function(Collection, Item) {
+			if (Item.selected) {
+				Item.button.addClass('active');
 			}
+		},
+		afterItemClick: function(Collection, Item) {
+			
+			$('.js-offers-count').html(Collection.activeItemsCount());
+			updateUrl();
+			
+			if (Item.selected) {
+				Item.button.addClass('active');
+				return;
+			}
+			Item.button.removeClass('active');
 		}
-		
-		UpdateCookie();
-		UpdateUrl();
-		UpdateCartPreview();
-	};
+	});
 	
-	var SerializeData = function()
-	{
-		return selectedItemsList.join(seperator);
-	};
-	
-	var UpdateCookie = function()
-	{
-		Cookies.set(cookieName, SerializeData(), { expires: 7, path: '' });
-	};
-	
-	var UpdateUrl = function()
-	{
-		$checkoutButton.attr('href', $checkoutButton.data('href') + '?selectedItems=' + SerializeData());
-	};
-	
-	var UpdateCartPreview = function()
-	{
-		$('#cart-preview').find('span').text(selectedItemsList.length);
-	};
-	
-	// Init List
-	if ($('#list').length !== 0) {
-		GenerateList();
-		InitList();
-	}
-	
-	if ($('#form').length !== 0) {
-		
-	}
+	updateUrl();
 });

@@ -8,10 +8,15 @@ class SimpleCart
 	public $cookie_time_days = 7; // default 7days
 	protected $data = array();
 	
-	public static function data()
+	public static function data($getKey = '', $cookieKey = '')
 	{
-		$cart = new self();
+		$cart = new self($getKey, $cookieKey);
 		return $cart->getItems();
+	}
+	
+	public function __construct($getKey, $cookieKey) {
+		$this->get_key = $getKey;
+		$this->cookie_key = $cookieKey;
 	}
 	
 	public function getItems()
@@ -66,7 +71,7 @@ class SimpleCart
 			$this->cookie_key, 
 			implode($this->delimiter, $data), 
 			time() + self::getCookieDays($this->cookie_time_days),
-			''
+			'/'
 		);
 	}
 	

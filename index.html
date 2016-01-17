@@ -2,27 +2,134 @@
 	<head>
 		<meta charset="UTF-8">
 		
-		<title>JS Cart sample - List</title>		
+		<title>JS Cart sample - List</title>
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/main.css">
 	</head>
 	<body>
-		<div id="container">
-			<div id="cart-preview"><span></span>❤</div>
-			<ul id="list"></ul>
-			<a class="js-checkout" href="form.php">Checkout</a>
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">Url Gen</div>
+						<div class="panel-body">
+							<div class="form-group">
+								<label>Serialized Url</label>
+								<input value="form.php" class="form-control js-serialized-url">
+							</div>
+							<a class="js-checkout" href="form.php">Checkout</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">Offers <span class="js-offers-count"></span></div>
+						<table id="offers-list" class="table"></table>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">Regions <span class="js-regions-count"></span></div>
+						<table id="regions-list" class="table"></table>
+					</div>
+				</div>
+			</div>
 		</div>
 		
+		
+		<!-- For dummy content only -->		
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-		<script src="js/js.cookie.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<script src="js/tmpl.min.js"></script>
-		<script src="js/js_cart.js"></script>
 		<script id="template-list" type="text/x-tmpl">
+			<thead>
+				<tr>
+					<th width="20" class="text-center">#</th>
+					<th>Title</th>
+					<th width="50" class="text-center">{%= o.symbol %}</th>
+				</tr>
+			</thead>
 			{% for (var i=0; i < 10; i++) { %}
-				<li class="js-item">
-					<a data-id="{%= i+1 %}" class="js-add-to-cart-button" href="#">❤</a>
-					<span>ID: {%= i+1 %}</span>
-				</li>
+				<tr class="{%= (o.isOffers) ? 'js-cart-item' : 'js-region-item' %}">
+					<td class="text-center">{%= i+1 %}</td>
+					<td>{%= (o.isOffers) ? o.data[i].title : o.data[i].city %}</td>
+					<td class="text-center">
+						<a data-id="{%= i+1 %}" class="btn btn-default {%= (o.isOffers) ? 'js-add-to-cart-button' : 'js-add-region-button' %}" href="#" role="button">{%= o.symbol %}</a>
+					</td>
+				</tr>
 			{% } %}
+		</script>		
+		<script type="text/javascript">
+			// Set up dummy content
+			var symbols = {
+				atom: '⚛',
+				heart: '❤'
+			};
+
+			var fakeData = [{
+				"id": 1,
+				"city": "Reshetikha",
+				"title": "Flashdog"
+			  }, {
+				"id": 2,
+				"city": "Tubli",
+				"title": "Agimba"
+			  }, {
+				"id": 3,
+				"city": "Liuqu",
+				"title": "Aivee"
+			  }, {
+				"id": 4,
+				"city": "Sanjia",
+				"title": "Linklinks"
+			  }, {
+				"id": 5,
+				"city": "Strängnäs",
+				"title": "Edgeify"
+			  }, {
+				"id": 6,
+				"city": "Criciúma",
+				"title": "Yadel"
+			  }, {
+				"id": 7,
+				"city": "Bartolomé Masó",
+				"title": "Bluezoom"
+			  }, {
+				"id": 8,
+				"city": "Newark",
+				"title": "Meeveo"
+			  }, {
+				"id": 9,
+				"city": "Staronizhestebliyevskaya",
+				"title": "Lazzy"
+			  }, {
+				"id": 10,
+				"city": "Samoljica",
+				"title": "Realblab"
+			  }];
+
+			// Offers
+			$('#offers-list').html(tmpl('template-list', {
+				isOffers: true,
+				symbol: symbols.heart,
+				data: fakeData
+			}));
+
+			$('#regions-list').html(tmpl('template-list', {
+				isOffers: false,
+				symbol: symbols.atom,
+				data: fakeData
+			}));
 		</script>
+		
+		
+		<!-- Files You actually need -->
+		<script src="js/js.cookie.js"></script>
+		<script src="js/URI.min.js"></script>
+		<script src="js/js-cart-lib.js"></script>
+		<script src="js/js_cart.js"></script>
 	</body>
 </html>
